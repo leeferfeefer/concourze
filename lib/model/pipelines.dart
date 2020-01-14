@@ -1,13 +1,3 @@
-class Pipelines {
-  List<Pipeline> pipelines;
-
-  Pipelines({this.pipelines});
-
-  Pipelines.fromJson(Map<String, dynamic> json) {
-
-  }
-}
-
 class Pipeline {
   int id;
   String name;
