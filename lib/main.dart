@@ -88,14 +88,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   return Card(
                   color: Colors.amber[(6-index)*100],
                   child: InkWell(
-                      splashColor: Colors.blue.withAlpha(30),
+                      splashColor: Colors.blue,
                       onTap: () {
                         print('Card tapped.');
                       },
                       child: Center(
                         child: Container(
                           height: 100,
-                          child: Text('${pipelines[index].name}'),
+                          child: Text('${pipelines[index].name}',
+                          style: TextStyle(fontSize: 30)),
                         ),
                       )
                     ),
