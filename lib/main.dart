@@ -30,6 +30,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<List<Pipeline>> _pipelines;
+  Future<String> _token;
 
   @override
   void initState() {
@@ -43,23 +44,42 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<String> _getToken() async {
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    final response = await http.get('http://localhost:3333/getToken', headers: requestHeaders);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to get token');
+    }
+  }
+
   Future<List<Pipeline>> _getPipelines() async {
+
+    final token = await _getToken();
+
+    print("token is $token");
+
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
       'Authorization':
-          'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IiIsInR5cCI6IkpXVCJ9.eyJjc3JmIjoiZjk2ZGNjYjY3ZGZlNjU0MTdhYzE5ZjkxZWM5NjkxM2E3Mzc3Zjg3NTIxYTY4ZDllNjVkMzFhMjk1MzRhNGUwYyIsImVtYWlsIjoidGVzdCIsImV4cCI6MTU3OTA0NTk1NCwiaXNfYWRtaW4iOnRydWUsIm5hbWUiOiIiLCJzdWIiOiJDZ1IwWlhOMEVnVnNiMk5oYkEiLCJ0ZWFtcyI6eyJtYWluIjpbIm93bmVyIl19LCJ1c2VyX2lkIjoidGVzdCIsInVzZXJfbmFtZSI6InRlc3QifQ.d1Fc4znBmoylHD65uTA1X1wWSogpGUrtxi7Uad_hkRxOdjU-bBQjCoUqEaxkCUE-u2zZh0GMpnVRZgYBS6t-JBbaJxVM-7znW1PKoaqVoC0AJH6g-MGiS49WbRaYrvHDOjJrQxF-151OJaDE5VNpGOtYITDfl8vy3LeiyJ8AIeZ4PAosafqi-AxD439ccgOc--j2HzHI92Ak7wfUhzGfbxFCL86MtXqqWc24_iGeSPOevlymQnkbdIHBNoqIj08DOLw07uNpG-ERnJfY26Cu7grk-pMMjrPG2SAxMV4avQym_kWLNDsP4OwJYvvaJFU9b2_RAKLs39oKX4EL3hz2F2DpF9F58KouZmnKBFaln-EcvUFDdiz-h2jmFE75Qo02GfQPTAVBOlIZSoGJHqJ_HxdhUc7jOMmWnbnBxUnyG-fLyLQ1ed_X__sLGAnFL3wPwUewJ0TLG1T5CH9jlyP3aqbk-GXfRVTA2m0eMFca3AFpqsEtv0yKDNp2mxyk32jOBb1_xJdXZbHcbWZwy16p7VRC4oWl9qEUuPLMsK77I4huHdhtl2oPMC2D2UxO9LBVRM4xLHYjTI0MZ02uKnddh0rCZpZ9yYnnQpPEFVSOz3ObZDzXAC-wXiqvmzD2QrbdJbQEGFYN1FJdzcx_KZXs9IcWNRJzuoVTYSwpt9-wjhA'
+          "Bearer $token"
     };
 
-    final response = await http.get('http://localhost:8080/api/v1/pipelines',
-        headers: requestHeaders);
+    final response = await http.get('http://localhost:8080/api/v1/pipelines', headers: requestHeaders);
 
     if (response.statusCode == 200) {
       var pipelinesJson = jsonDecode(response.body) as List;
       List<Pipeline> pipelines = pipelinesJson.map((pipelineJson) => Pipeline.fromJson(pipelineJson)).toList();
       return pipelines;
     } else {
-      throw Exception('Failed to load post');
+      throw Exception('Login with fly to get the latest token');
     }
   }
 
@@ -85,21 +105,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(8),
                 itemCount: pipelines.length,
                 itemBuilder: (context, index) {
+                  var pipeline = pipelines[index];
                   return Card(
                   color: Colors.amber[(6-index)*100],
                   child: InkWell(
-                      splashColor: Colors.blue,
-                      onTap: () {
-                        print('Card tapped.');
-                      },
-                      child: Center(
-                        child: Container(
-                          height: 100,
-                          child: Text('${pipelines[index].name}',
-                          style: TextStyle(fontSize: 30)),
-                        ),
+                    splashColor: Colors.blue,
+                    onTap: () {
+                      print('Card tapped.');
+                    },
+                    child: Container(
+                      height: 100,
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.only(left: 10.0, right: 20.0),
+                            child: Image.asset(pipeline.paused ? 'assets/icons/pause.png' : 'assets/icons/play.png', height: 50, width: 50)
+                          ),
+                          Text('${pipeline.name}', style: TextStyle(fontSize: 30)),
+                          Spacer()
+                          ]
                       )
-                    ),
+                    )
+                  )
                   );
                 },
               );

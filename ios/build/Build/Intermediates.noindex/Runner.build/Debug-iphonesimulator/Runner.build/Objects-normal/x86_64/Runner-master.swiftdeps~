@@ -1,5 +1,0 @@
-version: "Apple Swift version 5.1 (swiftlang-1100.0.270.13 clang-1100.0.33.7)"
-options: "d480a2f74f56d49c998bb8ef40e06b69"
-build_time: [1578961178, 356600000]
-inputs:
-  "/Users/dxf2ci5/workspace/concourze/ios/Runner/AppDelegate.swift": [1576078437, 0]
