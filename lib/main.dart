@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Concourze',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
       home: MyHomePage(title: 'Concourze'),
     );
@@ -30,7 +30,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<List<Pipeline>> _pipelines;
-  Future<String> _token;
 
   @override
   void initState() {
@@ -50,7 +49,8 @@ class _MyHomePageState extends State<MyHomePage> {
       'Accept': 'application/json',
     };
 
-    final response = await http.get('http://localhost:3333/getToken', headers: requestHeaders);
+    final response = await http.get('http://localhost:3333/getToken',
+        headers: requestHeaders);
 
     if (response.statusCode == 200) {
       return response.body;
@@ -60,28 +60,48 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<List<Pipeline>> _getPipelines() async {
-
     final token = await _getToken();
-
-    print("token is $token");
-
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': 'application/json',
-      'Authorization':
-          "Bearer $token"
+      'Authorization': "Bearer $token"
     };
 
-    final response = await http.get('http://localhost:8080/api/v1/pipelines', headers: requestHeaders);
+    final response = await http.get('http://localhost:8080/api/v1/pipelines',
+        headers: requestHeaders);
 
     if (response.statusCode == 200) {
       var pipelinesJson = jsonDecode(response.body) as List;
-      List<Pipeline> pipelines = pipelinesJson.map((pipelineJson) => Pipeline.fromJson(pipelineJson)).toList();
+      List<Pipeline> pipelines = pipelinesJson
+          .map((pipelineJson) => Pipeline.fromJson(pipelineJson))
+          .toList();
       return pipelines;
     } else {
       throw Exception('Login with fly to get the latest token');
     }
   }
+
+//  _showPipelineMenu(BuildContext context) {
+//    print(context);
+//    return () async {
+//      String selectedPipelineAction = await showMenu<String>(
+//        context: context,
+//        position: new RelativeRect.fromLTRB(60.0, 40.0, 100.0, 100.0),
+//        items: pipelineActions.map((String pipelineAction) {
+//          return new PopupMenuItem<String>(
+//            child: new Text(pipelineAction),
+//            value: pipelineAction,
+//          );
+//        }).toList(),
+//      );
+//      if (selectedPipelineAction != null) {
+//        print('selected');
+////        setState(() {
+////
+////        });
+//      }
+//    };
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,39 +127,31 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (context, index) {
                   var pipeline = pipelines[index];
                   return Card(
-                  color: Colors.amber[(6-index)*100],
-                  child: InkWell(
-                    splashColor: Colors.blue,
-                    onTap: () {
-                      print('Card tapped.');
-                    },
-                    child: Container(
-                      height: 100,
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            margin: const EdgeInsets.only(left: 10.0, right: 20.0),
-                            child: Image.asset(pipeline.paused ? 'assets/icons/pause.png' : 'assets/icons/play.png', height: 50, width: 50)
-                          ),
-                          Text('${pipeline.name}', style: TextStyle(fontSize: 30)),
-                          Spacer()
-                          ]
-                      )
-                    )
-                  )
-                  );
+                      color: pipeline.paused
+                          ? Colors.red[(6 - index) * 100]
+                          : Colors.green[(6 - index) * 100],
+                      child: InkWell(
+                          splashColor: pipeline.paused
+                              ? Colors.redAccent
+                              : Colors.greenAccent,
+                          onTap: () {},
+                          child: Container(
+                              height: 100,
+                              child: Row(children: <Widget>[
+                                Spacer(),
+                                Text('${pipeline.name}',
+                                    style: TextStyle(fontSize: 30)),
+                                Spacer()
+                              ]))));
                 },
               );
             }
-          }
-        ),
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: getPipelinesButtonPressed,
         tooltip: 'Make call to retrieve pipelines',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: Icon(Icons.refresh),
+      ),
     );
   }
 }
-//      body:
-//  }
