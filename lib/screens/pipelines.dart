@@ -127,7 +127,7 @@ class _PipelinesState extends State<Pipelines> {
                                     _pipelines = _getPipelines();
                                   });
                               });
-                          }
+                          },
                           child: Container(
                               height: 100,
                               child: Row(children: <Widget>[
