@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:concourze/model/pipelines.dart';
+import 'package:concourze/model/pipeline.dart';
 import 'package:concourze/screens/jobs.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
